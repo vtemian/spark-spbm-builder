@@ -17,9 +17,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # DGX OS 7 is Ubuntu 24.04. jammy is here because the package is
-        # Architecture: all and costs nothing to also offer to 22.04 boxes.
-        series: [noble, jammy]
+        # noble only. DGX OS 7 is Ubuntu 24.04, so that is the only series a
+        # Spark runs. jammy was tried and is actively harmful: it has no
+        # dh-dkms package, so its build sits in Dependency wait forever, and a
+        # second series re-uploads a regenerated .orig.tar.gz that Launchpad
+        # rejects for differing from the one it already accepted.
+        series: [noble]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -63,7 +66,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        series: [noble, jammy]
+        series: [noble]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 

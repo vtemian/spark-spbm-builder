@@ -42,7 +42,8 @@ prepare: fetch ## Unpack upstream and lay the debian/ directory over it
 	# one for a source build, and it must not contain debian/ — GitHub's own
 	# archive cannot be used directly because its top-level directory is named
 	# after the commit rather than <package>-<version>.
-	tar -czf $(BUILD_DIR)/spbm_$(SPBM_VERSION).orig.tar.gz \
+	tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
+		-czf $(BUILD_DIR)/spbm_$(SPBM_VERSION).orig.tar.gz \
 		-C $(BUILD_DIR) spbm-$(SPBM_VERSION)
 	cp -r debian-spbm $(SRC_DIR)/debian
 	sed -i.bak '1s|.*|spbm ($(DEB_VERSION)) $(BUILD_DIST); urgency=low|' \

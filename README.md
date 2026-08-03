@@ -50,7 +50,7 @@ success.
 
 Pushes to `main` build the package and upload it to
 [`ppa:vladtemian/spark-spbm`](https://launchpad.net/~vladtemian/+archive/ubuntu/spark-spbm)
-for noble and jammy.
+for noble. DGX OS 7 is Ubuntu 24.04, which is the only series a Spark runs.
 
 Upstream declares `MODULE_LICENSE("GPL")` in `spbm.c` but ships no `LICENSE`
 file. A pull request adding the matching GPL-2.0 text is open at
