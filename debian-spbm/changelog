@@ -1,0 +1,5 @@
+spbm (0.3.0-noble~ppa1) noble; urgency=low
+
+  * Package antheas/spark_hwmon as a DKMS module.
+
+ -- Vlad Temian <vladtemian@gmail.com>  Sun, 03 Aug 2026 21:00:00 +0000

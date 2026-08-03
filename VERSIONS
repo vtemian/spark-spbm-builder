@@ -1,0 +1,15 @@
+# vim: set ft=make:
+
+# Upstream is antheas/spark_hwmon. It publishes no tags, so the source is
+# pinned to a commit: a moving branch would silently change what a rebuild
+# produces, and this package installs a kernel module.
+SPBM_VERSION := 0.3.0
+SPBM_COMMIT := 352c76e538cadece0e4887a153fef95f8f5ea1d4
+SPBM_REPO := https://github.com/antheas/spark_hwmon
+
+SPBM_URL := $(SPBM_REPO)/archive/$(SPBM_COMMIT).tar.gz
+
+# SPBM_VERSION must match PACKAGE_VERSION in upstream's dkms.conf, because
+# dkms.conf hardcodes the version into its build and clean paths. Bumping the
+# commit without checking that is how DKMS ends up building in a directory
+# nothing installed to.

@@ -1,0 +1,31 @@
+Source: spbm
+Section: kernel
+Priority: optional
+Maintainer: Vlad Temian <vladtemian@gmail.com>
+Build-Depends: debhelper-compat (= 13), dh-dkms
+Standards-Version: 4.6.2
+Homepage: https://github.com/antheas/spark_hwmon
+Rules-Requires-Root: no
+
+Package: spbm-dkms
+Architecture: all
+Depends: ${misc:Depends}, dkms (>= 2.1.0.0)
+Recommends: linux-headers-nvidia-hwe-24.04 | linux-headers-generic | linux-headers
+Description: hwmon driver for DGX Spark whole-system power telemetry
+ Reads the System Power Budget Manager shared memory region that the MediaTek
+ SSPM firmware maintains on the NVIDIA GB10 SoC, and exposes it through the
+ standard hwmon sysfs interface.
+ .
+ This is the only way to read whole-system power on a DGX Spark. NVIDIA's
+ nvidia-smi reports the GPU rail alone, which does not span even its own
+ package: the GB10 SoC is rated at 140 W for CPU and GPU together inside a
+ 240 W system. The firmware measures the rest and keeps it in registers no
+ shipped driver binds.
+ .
+ Fourteen power channels including total system input, four cumulative energy
+ accumulators in millijoules, eight thermal zones, and writable power limits.
+ .
+ Built by DKMS against the running kernel, so it survives kernel upgrades. On
+ a Secure Boot machine DKMS signs the module with the machine owner key and
+ the installer will prompt you to enrol it, which needs a keyboard at the
+ console once.

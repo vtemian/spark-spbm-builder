@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+DKMS_NAME := spbm
+DKMS_VERSION := 0.3.0
+
+%:
+	dh $@ --with dkms
+
+# Nothing is compiled here. A DKMS source package ships the source, and the
+# target machine builds it against its own running kernel. Upstream's default
+# make target is `all: modules sign`, and `sign` calls sudo — dkms.conf invokes
+# the `modules` target explicitly, so that path is never taken.
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_install:
+override_dh_auto_clean:
+
+override_dh_install:
+	dh_install spbm.c Makefile usr/src/$(DKMS_NAME)-$(DKMS_VERSION)/
+
+override_dh_dkms:
+	dh_dkms -V $(DKMS_VERSION)

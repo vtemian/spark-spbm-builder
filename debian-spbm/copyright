@@ -1,0 +1,39 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: spark_hwmon
+Upstream-Contact: Antheas Kapenekakis <antheas@cs.aau.dk>
+Source: https://github.com/antheas/spark_hwmon
+
+Files: spbm.c Makefile dkms.conf
+Copyright: Antheas Kapenekakis <antheas@cs.aau.dk>
+License: GPL-2+
+ spbm.c declares MODULE_LICENSE("GPL"), which the Linux kernel documents as
+ "GNU Public License v2 or later", and MODULE_AUTHOR names the copyright
+ holder above.
+ .
+ THIS PACKAGE MUST NOT BE PUBLISHED UNTIL UPSTREAM CARRIES A LICENCE FILE.
+ At the time of writing the repository has none. MODULE_LICENSE is a
+ declaration to the kernel's symbol machinery, not a grant of redistribution
+ rights, so the terms are stated in the source but not in the project. Building
+ this package for a machine you own is fine; uploading it to a PPA or any other
+ archive is redistribution and needs terms that are actually published.
+ .
+ A pull request adding the matching GPL-2.0 text is open upstream at
+ https://github.com/antheas/spark_hwmon/pull/1 — once it lands, or upstream
+ states terms another way, delete this paragraph and publish.
+
+Files: debian/*
+Copyright: 2026 Vlad Temian <vladtemian@gmail.com>
+License: GPL-2+
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in "/usr/share/common-licenses/GPL-2".

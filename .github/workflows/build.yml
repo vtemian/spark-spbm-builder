@@ -1,0 +1,86 @@
+name: Build packages
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build ${{ matrix.series }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        # DGX OS 7 is Ubuntu 24.04. jammy is here because the package is
+        # Architecture: all and costs nothing to also offer to 22.04 boxes.
+        series: [noble, jammy]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install the packaging toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            devscripts debhelper dh-dkms dpkg-dev lintian
+
+      - name: Build the binary package
+        run: make deb BUILD_DIST=${{ matrix.series }}
+
+      - name: Check it with lintian
+        run: lintian build/*.deb || true
+
+      - name: Confirm DKMS registration actually landed
+        run: |
+          set -euo pipefail
+          deb=$(ls build/*.deb | head -1)
+          dpkg-deb -c "$deb" | grep -q 'usr/src/spbm-' \
+            || { echo "source not shipped to /usr/src"; exit 1; }
+          dpkg-deb -e "$deb" /tmp/ctrl
+          grep -q dkms /tmp/ctrl/postinst \
+            || { echo "dh_dkms did not add maintainer scripts"; exit 1; }
+          echo "package registers with DKMS"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spbm-dkms-${{ matrix.series }}
+          path: build/*.deb
+
+  # Publishing is deliberately gated. antheas/spark_hwmon carries no LICENSE
+  # file, so uploading a package built from it is redistribution without stated
+  # terms. See debian-spbm/copyright. Once the licence lands upstream, drop the
+  # `if: false` and add the PGP secrets.
+  ppa:
+    name: upload to PPA
+    needs: build
+    if: false
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        series: [noble, jammy]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install the packaging toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            devscripts debhelper dh-dkms dput-ng
+
+      - name: Import the signing key
+        env:
+          PGP_KEY: ${{ secrets.PGP_KEY }}
+        run: printf '%s' "$PGP_KEY" | gpg --batch --import
+
+      - name: Build and upload the source package
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          make source BUILD_DIST=${{ matrix.series }}
+          dput ppa:vtemian/spark-spbm build/*.changes
