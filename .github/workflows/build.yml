@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            devscripts debhelper dh-dkms dpkg-dev lintian
+            build-essential devscripts debhelper dh-dkms dpkg-dev lintian
 
       - name: Build the binary package
         run: make deb BUILD_DIST=${{ matrix.series }}
@@ -71,7 +71,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            devscripts debhelper dh-dkms dput-ng
+            build-essential devscripts debhelper dh-dkms dput-ng
 
       # Same shape as gitfs-builder's, which is the version known to work:
       # debuild needs a non-interactive agent, so loopback pinentry and an
