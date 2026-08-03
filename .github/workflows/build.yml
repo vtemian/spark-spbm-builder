@@ -95,8 +95,10 @@ jobs:
         env:
           DEBEMAIL: vladtemian@gmail.com
           DEBFULLNAME: Vlad Temian
+          GNUPGHOME: /home/runner/.gnupg
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_KEY_ID: ${{ env.GPG_KEY_ID }}
         run: |
           set -euo pipefail
           make source BUILD_DIST=${{ matrix.series }}
-          dput ppa:vladtemian/spark-spbm build/*.changes
+          dput ppa:vladtemian/spark-spbm build/*_source.changes
