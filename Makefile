@@ -35,6 +35,12 @@ prepare: fetch ## Unpack upstream and lay the debian/ directory over it
 	rm -rf $(SRC_DIR)
 	mkdir -p $(SRC_DIR)
 	tar -xzf $(BUILD_DIR)/spbm.tar.gz -C $(SRC_DIR) --strip-components=1
+	# Repack as an orig tarball before debian/ exists. `3.0 (quilt)` requires
+	# one for a source build, and it must not contain debian/ — GitHub's own
+	# archive cannot be used directly because its top-level directory is named
+	# after the commit rather than <package>-<version>.
+	tar -czf $(BUILD_DIR)/spbm_$(SPBM_VERSION).orig.tar.gz \
+		-C $(BUILD_DIR) spbm-$(SPBM_VERSION)
 	cp -r debian-spbm $(SRC_DIR)/debian
 	sed -i.bak '1s|.*|spbm ($(DEB_VERSION)) $(BUILD_DIST); urgency=low|' \
 		$(SRC_DIR)/debian/changelog && rm -f $(SRC_DIR)/debian/changelog.bak

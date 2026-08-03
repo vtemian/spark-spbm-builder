@@ -52,14 +52,14 @@ jobs:
           name: spbm-dkms-${{ matrix.series }}
           path: build/*.deb
 
-  # Publishing is deliberately gated. antheas/spark_hwmon carries no LICENSE
-  # file, so uploading a package built from it is redistribution without stated
-  # terms. See debian-spbm/copyright. Once the licence lands upstream, drop the
-  # `if: false` and add the PGP secrets.
+  # Uploads to ppa:vladtemian/spark-spbm on pushes to main. Upstream
+  # (antheas/spark_hwmon) declares MODULE_LICENSE("GPL") in spbm.c but ships no
+  # LICENSE file; a PR adding the matching text is open at
+  # https://github.com/antheas/spark_hwmon/pull/1. See debian-spbm/copyright.
   ppa:
     name: upload to PPA
     needs: build
-    if: false
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-24.04
     strategy:
       matrix:

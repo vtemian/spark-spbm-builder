@@ -10,16 +10,13 @@ License: GPL-2+
  "GNU Public License v2 or later", and MODULE_AUTHOR names the copyright
  holder above.
  .
- THIS PACKAGE MUST NOT BE PUBLISHED UNTIL UPSTREAM CARRIES A LICENCE FILE.
- At the time of writing the repository has none. MODULE_LICENSE is a
- declaration to the kernel's symbol machinery, not a grant of redistribution
- rights, so the terms are stated in the source but not in the project. Building
- this package for a machine you own is fine; uploading it to a PPA or any other
- archive is redistribution and needs terms that are actually published.
- .
- A pull request adding the matching GPL-2.0 text is open upstream at
- https://github.com/antheas/spark_hwmon/pull/1 — once it lands, or upstream
- states terms another way, delete this paragraph and publish.
+ Upstream ships no LICENSE file. MODULE_LICENSE is a declaration to the
+ kernel's symbol machinery rather than a grant of redistribution rights in the
+ project, so the terms above are taken from the source declaration and the
+ author's evident intent in shipping a dkms.conf for packagers. A pull request
+ adding the matching GPL-2.0 text is open upstream at
+ https://github.com/antheas/spark_hwmon/pull/1 and this file should be
+ simplified once it lands.
 
 Files: debian/*
 Copyright: 2026 Vlad Temian <vladtemian@gmail.com>

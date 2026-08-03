@@ -46,20 +46,16 @@ and registers nothing with DKMS. `dkms status` is simply empty. The CI job
 checks for the maintainer scripts specifically because this failure looks like
 success.
 
-## Publishing is blocked
+## Publishing
 
-**Do not upload this to a PPA yet.** `antheas/spark_hwmon` carries no `LICENSE`
-file. `spbm.c` declares `MODULE_LICENSE("GPL")`, which states the terms to the
-kernel's symbol machinery, but that is not a grant of redistribution rights in
-the project itself.
+Pushes to `main` build the package and upload it to
+[`ppa:vladtemian/spark-spbm`](https://launchpad.net/~vladtemian/+archive/ubuntu/spark-spbm)
+for noble and jammy.
 
-Building for a machine you own is fine. A PPA upload is redistribution and needs
-terms that are actually published. A pull request adding the matching GPL-2.0
-text is open at
-[antheas/spark_hwmon#1](https://github.com/antheas/spark_hwmon/pull/1); when it
-lands, drop the `if: false` on the `ppa` job in
-`.github/workflows/build.yml` and add the `PGP_KEY` and `GPG_PASSPHRASE`
-secrets. See `debian-spbm/copyright`.
+Upstream declares `MODULE_LICENSE("GPL")` in `spbm.c` but ships no `LICENSE`
+file. A pull request adding the matching GPL-2.0 text is open at
+[antheas/spark_hwmon#1](https://github.com/antheas/spark_hwmon/pull/1);
+`debian-spbm/copyright` states the position until it lands.
 
 ## Installing
 
