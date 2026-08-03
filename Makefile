@@ -12,9 +12,13 @@ SIGNING_KEY ?= $(if $(GPG_KEY_ID),$(GPG_KEY_ID),vladtemian@gmail.com)
 # Reproducible tarballs need GNU tar. macOS ships bsdtar, which rejects these
 # flags, so they are only applied when GNU tar is what is actually running.
 # CI is Ubuntu, so the archive Launchpad sees is always the reproducible one.
+#
+# The mtime is the upstream commit date rather than the epoch. dh_install
+# preserves mtimes into the .deb, and Launchpad rejects a binary holding any
+# file dated before 1975 — see SPBM_COMMIT_EPOCH in VERSIONS.
 TAR ?= $(shell command -v gtar 2>/dev/null || echo tar)
 TAR_REPRO := $(shell $(TAR) --version 2>/dev/null | grep -q GNU \
-	&& echo "--sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner")
+	&& echo "--sort=name --mtime=@$(SPBM_COMMIT_EPOCH) --owner=0 --group=0 --numeric-owner")
 
 ifdef GITHUB_REF_TYPE
 ifeq ($(GITHUB_REF_TYPE),tag)

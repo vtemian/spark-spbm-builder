@@ -9,14 +9,31 @@ SPBM_REPO := https://github.com/antheas/spark_hwmon
 
 SPBM_URL := $(SPBM_REPO)/archive/$(SPBM_COMMIT).tar.gz
 
-# The Debian upstream version carries the commit, because this packages a git
-# snapshot rather than a release. It also keeps the .orig.tar.gz filename unique
-# per commit: Launchpad accepts one orig per upstream version and rejects any
-# later upload whose orig differs, so a bare "0.3.0" makes the archive
-# un-republishable the moment a tarball is regenerated.
+# Author date of SPBM_COMMIT, in seconds. Every file in the .orig.tar.gz is
+# stamped with it, so rebuilds produce a byte-identical tarball without
+# inventing a timestamp. It must be a real date, not zero: Launchpad rejects
+# any binary containing a file dated before 1975, and it does so only after a
+# successful build, leaving the upload dead with no signal on the build page.
+#
+# Move it whenever SPBM_COMMIT moves:
+#   git -C <clone> show -s --format=%at <commit>
+SPBM_COMMIT_EPOCH := 1772455383
+
+# GNU date wants -d, BSD date wants -r; this repo is developed on macOS and
+# built on Ubuntu, so both have to work.
+SPBM_COMMIT_DATE := $(shell date -u -d @$(SPBM_COMMIT_EPOCH) +%Y%m%d 2>/dev/null \
+	|| date -u -r $(SPBM_COMMIT_EPOCH) +%Y%m%d)
+
+# Debian's snapshot convention, <version>+git<date>.<hash>, because this
+# packages a git snapshot rather than a release. It also keeps the
+# .orig.tar.gz filename unique: Launchpad accepts one orig per upstream
+# version and rejects any later upload whose orig differs byte-for-byte, so
+# anything reused across regenerated tarballs makes the archive
+# un-republishable. Both halves must move together — changing how the tarball
+# is packed without changing this name is exactly the case Launchpad refuses.
 #
 # SPBM_VERSION stays bare for DKMS, which must match dkms.conf's PACKAGE_VERSION.
-SPBM_UPSTREAM := $(SPBM_VERSION)+git$(shell echo $(SPBM_COMMIT) | cut -c1-7)
+SPBM_UPSTREAM := $(SPBM_VERSION)+git$(SPBM_COMMIT_DATE).$(shell echo $(SPBM_COMMIT) | cut -c1-7)
 
 # SPBM_VERSION must match PACKAGE_VERSION in upstream's dkms.conf, because
 # dkms.conf hardcodes the version into its build and clean paths. Bumping the

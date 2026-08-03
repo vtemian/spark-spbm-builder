@@ -50,6 +50,22 @@ jobs:
             || { echo "dh_dkms did not add maintainer scripts"; exit 1; }
           echo "package registers with DKMS"
 
+      # Launchpad refuses any binary holding a file dated before 1975, and it
+      # checks *after* building: the build goes green, the upload dies, and the
+      # only trace is "Failed to upload" with the reason buried in the upload
+      # log. Catching it here keeps that failure inside a pull request.
+      - name: Reject timestamps Launchpad will not accept
+        run: |
+          set -euo pipefail
+          deb=$(ls build/*.deb | head -1)
+          old=$(dpkg-deb -c "$deb" | awk '$4 < "1975-01-01"')
+          if [ -n "$old" ]; then
+            echo "$old"
+            echo "files predate 1975; Launchpad would reject this upload"
+            exit 1
+          fi
+          echo "all file timestamps are acceptable to Launchpad"
+
       - uses: actions/upload-artifact@v4
         with:
           name: spbm-dkms-${{ matrix.series }}
