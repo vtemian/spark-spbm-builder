@@ -2,12 +2,19 @@ include VERSIONS
 
 TARGET ?= $(CURDIR)/build
 BUILD_DIR := $(TARGET)
-SRC_DIR := $(BUILD_DIR)/spbm-$(SPBM_VERSION)
+SRC_DIR := $(BUILD_DIR)/spbm-$(SPBM_UPSTREAM)
 
 BUILD_DIST := $(shell lsb_release -sc 2>/dev/null || echo noble)
 
 # The key debsign signs with. GPG_KEY_ID is exported by CI after importing.
 SIGNING_KEY ?= $(if $(GPG_KEY_ID),$(GPG_KEY_ID),vladtemian@gmail.com)
+
+# Reproducible tarballs need GNU tar. macOS ships bsdtar, which rejects these
+# flags, so they are only applied when GNU tar is what is actually running.
+# CI is Ubuntu, so the archive Launchpad sees is always the reproducible one.
+TAR ?= $(shell command -v gtar 2>/dev/null || echo tar)
+TAR_REPRO := $(shell $(TAR) --version 2>/dev/null | grep -q GNU \
+	&& echo "--sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner")
 
 ifdef GITHUB_REF_TYPE
 ifeq ($(GITHUB_REF_TYPE),tag)
@@ -19,7 +26,7 @@ else
 	BUILD_VERSION ?= $(shell date +'~ppa%Y%m%d+%H%M%S')
 endif
 
-DEB_VERSION := $(SPBM_VERSION)-$(BUILD_DIST)$(BUILD_VERSION)
+DEB_VERSION := $(SPBM_UPSTREAM)-$(BUILD_DIST)$(BUILD_VERSION)
 
 .DEFAULT_GOAL := help
 
@@ -42,9 +49,9 @@ prepare: fetch ## Unpack upstream and lay the debian/ directory over it
 	# one for a source build, and it must not contain debian/ — GitHub's own
 	# archive cannot be used directly because its top-level directory is named
 	# after the commit rather than <package>-<version>.
-	tar --sort=name --mtime='@0' --owner=0 --group=0 --numeric-owner \
-		-czf $(BUILD_DIR)/spbm_$(SPBM_VERSION).orig.tar.gz \
-		-C $(BUILD_DIR) spbm-$(SPBM_VERSION)
+	$(TAR) $(TAR_REPRO) \
+		-czf $(BUILD_DIR)/spbm_$(SPBM_UPSTREAM).orig.tar.gz \
+		-C $(BUILD_DIR) spbm-$(SPBM_UPSTREAM)
 	cp -r debian-spbm $(SRC_DIR)/debian
 	sed -i.bak '1s|.*|spbm ($(DEB_VERSION)) $(BUILD_DIST); urgency=low|' \
 		$(SRC_DIR)/debian/changelog && rm -f $(SRC_DIR)/debian/changelog.bak

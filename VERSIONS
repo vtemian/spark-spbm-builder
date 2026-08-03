@@ -9,6 +9,15 @@ SPBM_REPO := https://github.com/antheas/spark_hwmon
 
 SPBM_URL := $(SPBM_REPO)/archive/$(SPBM_COMMIT).tar.gz
 
+# The Debian upstream version carries the commit, because this packages a git
+# snapshot rather than a release. It also keeps the .orig.tar.gz filename unique
+# per commit: Launchpad accepts one orig per upstream version and rejects any
+# later upload whose orig differs, so a bare "0.3.0" makes the archive
+# un-republishable the moment a tarball is regenerated.
+#
+# SPBM_VERSION stays bare for DKMS, which must match dkms.conf's PACKAGE_VERSION.
+SPBM_UPSTREAM := $(SPBM_VERSION)+git$(shell echo $(SPBM_COMMIT) | cut -c1-7)
+
 # SPBM_VERSION must match PACKAGE_VERSION in upstream's dkms.conf, because
 # dkms.conf hardcodes the version into its build and clean paths. Bumping the
 # commit without checking that is how DKMS ends up building in a directory
